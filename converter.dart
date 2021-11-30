@@ -1,30 +1,28 @@
-void main() {
-  var wallet1 = Wallet(UAH(), "wallet_1");
-  var wallet2 = Wallet(USD(), "wallet_2");
-  var wallet3 = Wallet(EUR(), "wallet_3");
+abstract class Currency {
+  final String _name;
+  final String _symbol;
+  final double _rateToUA;
 
-  wallet1.addAmount(100);
-  wallet2.addAmount(200);
-  wallet3.addAmount(300);
+  Currency(this._name, this._symbol, this._rateToUA);
+  
+  double getRateToUA() => _rateToUA;
 
-  print(wallet1);
-  print(wallet2);
-  print(wallet3);
-  
-  wallet2.transferTo(wallet1, 10);
-  wallet3.transferTo(wallet1, 10);
+  @override
+  String toString() {
+    return 'name: $_name, symbol: $_symbol, rate to UAH: $_rateToUA';
+  }
+}
 
-  print(wallet1);
-  print(wallet2);
-  print(wallet3);
-  
-  wallet1.changeWalletCurrency(UAH());
-  wallet2.changeWalletCurrency(UAH());
-  wallet3.changeWalletCurrency(UAH());
-  
-  print(wallet1);
-  print(wallet2);
-  print(wallet3);
+class UAH extends Currency {
+  UAH() : super("Ukrainian Hryvna", "UAH", 1);
+}
+
+class USD extends Currency {
+  USD() : super("US Dollar", "USD", 27.12);
+}
+
+class EUR extends Currency {
+  EUR() : super("Euro", "EUR", 30.45);
 }
 
 class Wallet {
@@ -67,29 +65,31 @@ class Wallet {
   }
 }
 
-abstract class Currency {
-  final String _name;
-  final String _symbol;
-  final double _rateToUA;
+void main() {
+  var wallet1 = Wallet(UAH(), "wallet_1");
+  var wallet2 = Wallet(USD(), "wallet_2");
+  var wallet3 = Wallet(EUR(), "wallet_3");
 
-  Currency(this._name, this._symbol, this._rateToUA);
+  wallet1.addAmount(100);
+  wallet2.addAmount(200);
+  wallet3.addAmount(300);
+
+  print(wallet1);
+  print(wallet2);
+  print(wallet3);
   
-  double getRateToUA() => _rateToUA;
+  wallet2.transferTo(wallet1, 10);
+  wallet3.transferTo(wallet1, 10);
 
-  @override
-  String toString() {
-    return 'name: $_name, symbol: $_symbol, rate to UAH: $_rateToUA';
-  }
-}
-
-class UAH extends Currency {
-  UAH() : super("Ukrainian Hryvna", "UAH", 1);
-}
-
-class USD extends Currency {
-  USD() : super("US Dollar", "USD", 27.12);
-}
-
-class EUR extends Currency {
-  EUR() : super("Euro", "EUR", 30.45);
+  print(wallet1);
+  print(wallet2);
+  print(wallet3);
+  
+  wallet1.changeWalletCurrency(UAH());
+  wallet2.changeWalletCurrency(UAH());
+  wallet3.changeWalletCurrency(UAH());
+  
+  print(wallet1);
+  print(wallet2);
+  print(wallet3);
 }
