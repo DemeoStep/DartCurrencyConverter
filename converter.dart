@@ -1,11 +1,23 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 abstract class Currency {
   final String _name;
   final String _symbol;
-  final double _rateToUA;
+  double _rateToUA = 1;
 
-  Currency(this._name, this._symbol, this._rateToUA);
-  
+  Currency(this._name, this._symbol);
+
   double getRateToUA() => _rateToUA;
+
+  Future<void> getRate() async {
+    if (_symbol != 'UAH') {
+      var response = await http.get(Uri.parse(
+          'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=$_symbol&json'));
+      Map<String, dynamic> data = (jsonDecode(response.body) as List)[0];
+      _rateToUA = data['rate'];
+    } 
+  }
 
   @override
   String toString() {
@@ -14,15 +26,15 @@ abstract class Currency {
 }
 
 class UAH extends Currency {
-  UAH() : super("Ukrainian Hryvna", "UAH", 1);
+  UAH() : super("Ukrainian Hryvna", "UAH");
 }
 
 class USD extends Currency {
-  USD() : super("US Dollar", "USD", 27.12);
+  USD() : super("US Dollar", "USD");
 }
 
 class EUR extends Currency {
-  EUR() : super("Euro", "EUR", 30.45);
+  EUR() : super("Euro", "EUR");
 }
 
 class Wallet {
@@ -39,7 +51,7 @@ class Wallet {
   }
 
   void transferTo(Wallet wallet, double amount) {
-    if(wallet != this) {
+    if (wallet != this) {
       _amount -= amount;
       var amountInUAH = amount * _currency.getRateToUA();
 
@@ -48,15 +60,15 @@ class Wallet {
   }
 
   void changeWalletCurrency(Currency newCurrency) {
-    if(newCurrency != _currency) {
+    if (newCurrency != _currency) {
       var amountInUAH = _amount * _currency.getRateToUA();
       _currency = newCurrency;
       _amount = amountInUAH / _currency.getRateToUA();
     }
   }
-  
+
   String getAmountFormatted() {
-   return _amount.toStringAsFixed(2);
+    return _amount.toStringAsFixed(2);
   }
 
   @override
@@ -65,10 +77,17 @@ class Wallet {
   }
 }
 
-void main() {
-  var wallet1 = Wallet(UAH(), "wallet_1");
-  var wallet2 = Wallet(USD(), "wallet_2");
-  var wallet3 = Wallet(EUR(), "wallet_3");
+void main() async {
+  var uah = UAH();
+  var usd = USD();
+  var eur = EUR();
+  await uah.getRate();
+  await usd.getRate();
+  await eur.getRate();
+  
+  var wallet1 = Wallet(uah, "wallet_1");
+  var wallet2 = Wallet(usd, "wallet_2");
+  var wallet3 = Wallet(eur, "wallet_3");
 
   wallet1.addAmount(100);
   wallet2.addAmount(200);
@@ -77,18 +96,18 @@ void main() {
   print(wallet1);
   print(wallet2);
   print(wallet3);
-  
+
   wallet2.transferTo(wallet1, 10);
   wallet3.transferTo(wallet1, 10);
 
   print(wallet1);
   print(wallet2);
   print(wallet3);
-  
+
   wallet1.changeWalletCurrency(UAH());
   wallet2.changeWalletCurrency(UAH());
   wallet3.changeWalletCurrency(UAH());
-  
+
   print(wallet1);
   print(wallet2);
   print(wallet3);
