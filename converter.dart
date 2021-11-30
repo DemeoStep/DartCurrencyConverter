@@ -26,7 +26,7 @@ class EUR extends Currency {
 }
 
 class Wallet {
-  String _name;
+  final String _name;
   Currency _currency;
   double _amount = 0;
 
