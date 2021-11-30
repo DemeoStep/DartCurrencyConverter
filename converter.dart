@@ -14,7 +14,7 @@ abstract class Currency {
     if (_symbol != 'UAH') {
       var response = await http.get(Uri.parse(
           'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=$_symbol&json'));
-      Map<String, dynamic> data = (jsonDecode(response.body) as List)[0];
+      Map<String, dynamic> data = (jsonDecode(response.body) as List).first;
       _rateToUA = data['rate'];
     } 
   }
