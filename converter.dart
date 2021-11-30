@@ -2,21 +2,24 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 abstract class Currency {
-  final String _name;
+  String _name = '';
   final String _symbol;
   double _rateToUA = 1;
 
-  Currency(this._name, this._symbol);
+  Currency(this._symbol);
 
   double getRateToUA() => _rateToUA;
 
-  Future<void> getRate() async {
+  Future<void> init() async {
     if (_symbol != 'UAH') {
       var response = await http.get(Uri.parse(
           'https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=$_symbol&json'));
       Map<String, dynamic> data = (jsonDecode(response.body) as List).first;
       _rateToUA = data['rate'];
-    } 
+      _name = data['txt'];
+    } else {
+      _name = 'Українська гривня';
+    }
   }
 
   @override
@@ -26,15 +29,15 @@ abstract class Currency {
 }
 
 class UAH extends Currency {
-  UAH() : super("Ukrainian Hryvna", "UAH");
+  UAH() : super("UAH");
 }
 
 class USD extends Currency {
-  USD() : super("US Dollar", "USD");
+  USD() : super("USD");
 }
 
 class EUR extends Currency {
-  EUR() : super("Euro", "EUR");
+  EUR() : super("EUR");
 }
 
 class Wallet {
@@ -81,9 +84,9 @@ void main() async {
   var uah = UAH();
   var usd = USD();
   var eur = EUR();
-  await uah.getRate();
-  await usd.getRate();
-  await eur.getRate();
+  await uah.init();
+  await usd.init();
+  await eur.init();
   
   var wallet1 = Wallet(uah, "wallet_1");
   var wallet2 = Wallet(usd, "wallet_2");
@@ -104,9 +107,9 @@ void main() async {
   print(wallet2);
   print(wallet3);
 
-  wallet1.changeWalletCurrency(UAH());
-  wallet2.changeWalletCurrency(UAH());
-  wallet3.changeWalletCurrency(UAH());
+  wallet1.changeWalletCurrency(uah);
+  wallet2.changeWalletCurrency(uah);
+  wallet3.changeWalletCurrency(uah);
 
   print(wallet1);
   print(wallet2);
