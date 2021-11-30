@@ -87,7 +87,7 @@ void main() async {
   await uah.init();
   await usd.init();
   await eur.init();
-  
+
   var wallet1 = Wallet(uah, "wallet_1");
   var wallet2 = Wallet(usd, "wallet_2");
   var wallet3 = Wallet(eur, "wallet_3");
