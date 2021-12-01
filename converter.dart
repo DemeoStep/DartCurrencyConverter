@@ -8,7 +8,7 @@ abstract class Currency {
 
   Currency(this._symbol);
 
-  double getRateToUA() => _rateToUA;
+  double get getRateToUA => _rateToUA;
 
   Future<void> init() async {
     if (_symbol != 'UAH') {
@@ -47,7 +47,7 @@ class Wallet {
 
   Wallet(this._currency, this._name);
 
-  Currency getCurrency() => _currency;
+  Currency get getCurrency => _currency;
 
   void addAmount(double amount) {
     _amount += amount;
@@ -56,17 +56,17 @@ class Wallet {
   void transferTo(Wallet wallet, double amount) {
     if (wallet != this) {
       _amount -= amount;
-      var amountInUAH = amount * _currency.getRateToUA();
+      var amountInUAH = amount * _currency.getRateToUA;
 
-      wallet.addAmount(amountInUAH / wallet.getCurrency().getRateToUA());
+      wallet.addAmount(amountInUAH / wallet.getCurrency.getRateToUA);
     }
   }
 
   void changeWalletCurrency(Currency newCurrency) {
     if (newCurrency != _currency) {
-      var amountInUAH = _amount * _currency.getRateToUA();
+      var amountInUAH = _amount * _currency.getRateToUA;
       _currency = newCurrency;
-      _amount = amountInUAH / _currency.getRateToUA();
+      _amount = amountInUAH / _currency.getRateToUA;
     }
   }
 
